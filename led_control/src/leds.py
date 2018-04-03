@@ -40,9 +40,6 @@ class MatrixLeds(object):
                 break
             #color = [0,0,0,half_brightness]
             pixels  = color * self.leds_num
-            # with open('/dev/matrixio_everloop','wb') as bin_file:
-            #     bin_file.write(bytearray(pixels))
-            # bin_file.close()
             self.write_pixels(pixels)
             # self.show(pixels)
             time.sleep(0.02)
@@ -78,9 +75,6 @@ class MatrixLeds(object):
                 intensity += 4
                 pixels[l*self.channels+3]=intensity
             self.write_pixels(pixels)
-            # with open('/dev/matrixio_everloop','wb') as bin_file:
-            #     bin_file.write(bytearray(image))
-            # bin_file.close()
             led +=1
             time.sleep(0.02)
 
@@ -129,16 +123,5 @@ if __name__ == '__main__':
     global leds
     leds = MatrixLeds()
     led_listener()
-    # l = MatrixLeds()
-    # l.tail_clock(5)
     
-    #run()
-    #think()
-    # board = MatrixBoard()
-    # set_everloop_color(0,0,0,0)
-    # while True:
-    #     board._sync_everloop()
 
-    # board._reset_leds()
-    # print "random color"
-    # board.set_all_led(1,2,5,1)
