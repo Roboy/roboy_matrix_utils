@@ -90,20 +90,25 @@ class MatrixLeds(object):
 def mode_callback(msg):
     leds.run = True
     if (msg.mode==0):
+        print "off"
         leds.mode=0
         leds.turn_off()
     elif (msg.mode==1):
         leds.mode=1
+        print "puls"
         leds.dimming_puls(msg.duration)
     elif (msg.mode==2):
         leds.mode=2
+        print "tail"
         leds.tail_clock(msg.duration)
 
 def off_callback(msg):
+    print "off"
     leds.run = False
     leds.turn_off()
 
 def freeze_callback(msg):
+    print "freeze"
     leds.run = False
     leds.mode=-1
     leds.set_color(0,0,0,15)
@@ -114,7 +119,7 @@ def led_listener():
     rospy.Subscriber("/roboy/control/matrix/leds/off", Empty, off_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/freeze", Empty, freeze_callback)
     leds.mode=1
-    leds.dimming_puls(2)
+    leds.dimming_puls(8)
     rospy.spin()
 
         
