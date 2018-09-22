@@ -115,16 +115,16 @@ def freeze_callback(msg):
     
 def mode_simple_callback(msg):
     leds.run = True
-    if (msg.mode==0):
+    if (msg.data==0):
         print "off"
         leds.mode=0
         leds.turn_off()
     elif (msg.mode==1):
-        leds.mode=1
+        leds.data=1
         print "puls"
         leds.dimming_puls(0)
     elif (msg.mode==2):
-        leds.mode=2
+        leds.data=2
         print "tail"
         leds.tail_clock(0)
     
