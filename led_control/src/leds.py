@@ -5,7 +5,7 @@ import time
 import numpy
 import random
 from roboy_communication_control.msg import ControlLeds
-from std_msgs.msg import Empty
+from std_msgs.msg import Empty, Int32
 
 class MatrixLeds(object):
     """docstring for MatrixLeds"""
@@ -113,11 +113,27 @@ def freeze_callback(msg):
     leds.mode=-1
     leds.set_color(0,0,0,15)
     
+def mode_simple_callback(msg):
+    leds.run = True
+    if (msg.mode==0):
+        print "off"
+        leds.mode=0
+        leds.turn_off()
+    elif (msg.mode==1):
+        leds.mode=1
+        print "puls"
+        leds.dimming_puls(0)
+    elif (msg.mode==2):
+        leds.mode=2
+        print "tail"
+        leds.tail_clock(0)
+    
 def led_listener():
     rospy.init_node('roboy_led_control')
     rospy.Subscriber("/roboy/control/matrix/leds/mode", ControlLeds, mode_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/off", Empty, off_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/freeze", Empty, freeze_callback)
+    rospy.Subscriber("/roboy/control/matrix/leds/mode/simple", Int32, mode_simple_callback)
     leds.mode=1
     leds.dimming_puls(8)
     rospy.spin()
