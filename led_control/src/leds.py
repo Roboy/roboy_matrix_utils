@@ -188,10 +188,10 @@ class MatrixLeds(object):
                 led_l = 0
             if led_r == 36:
                 led_r = 0
-            print "led_l: ", led_l
-            print "led_r: ", led_r
-            print "clockwise_l, ", clockwise_l
-            print "clockwise_r, ", clockwise_r
+            # print "led_l: ", led_l
+            # print "led_r: ", led_r
+            # print "clockwise_l, ", clockwise_l
+            # print "clockwise_r, ", clockwise_r
 
             pixels = [0] * self.channels * self.leds_num
             pixels[led_r * self.channels + color] = brightness
@@ -256,7 +256,7 @@ def mode_callback(msg):
 def point_callback(msg):
     leds.mode = 4
     print "point"
-    leds.point_towards(msg.data)
+    leds.point_towards(msg.data, 0)
 
 
 def off_callback(msg):
