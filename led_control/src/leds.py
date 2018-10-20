@@ -254,9 +254,13 @@ def mode_callback(msg):
 
 
 def point_callback(msg):
+    leds.run = False
+    leds.mode = 0
+    time.sleep(0.25)
+    leds.run = True
     leds.mode = 4
     print "point"
-    leds.point_towards(msg.data, 0)
+    leds.point_towards(msg.data, 8)
 
 
 def off_callback(msg):
