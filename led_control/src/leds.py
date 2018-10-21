@@ -18,6 +18,9 @@ class MatrixLeds(object):
         self.leds_num = 36
         self.mode = 0
         self.current_color = [0, 0, 0, 50]
+        self.happy_face = [3, 4, 5, 13, 14, 15, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
+        self.sad_face = [3, 4, 5, 13, 14, 15, 25, 26, 27, 28]
+        self.face_pixels = self.happy_face
 
     def write_pixels(self, pixels):
         # image is a list of size 4*36
@@ -98,7 +101,7 @@ class MatrixLeds(object):
             # color = [0,0,0,half_brightness]
             pixels = [0, 0, 0, 0]
             for i in range(1, self.leds_num):
-                if i in [3, 4, 5, 13, 14, 15, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]:
+                if i in self.face_pixels:
                     pixels += color
                 else:
                     pixels += [0, 0, 0, 0]
@@ -137,7 +140,7 @@ class MatrixLeds(object):
             # color = [0,0,0,half_brightness]
             pixels = [0, 0, 0, 0]
             for i in range(1, self.leds_num):
-                if i in [3, 4, 5, 13, 14, 15, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]:
+                if i in self.face_pixels:
                     pixels += color
                 else:
                     pixels += [0, 0, 0, 0]
@@ -161,6 +164,9 @@ class MatrixLeds(object):
 
     def set_face_color(self, red, green, blue, white):
         self.current_color = [red, green, blue, white]
+
+    def set_face(self, new_look):
+        self.face_pixels = new_look
 
     def point_towards(self, point_led, duration=8, color=3):
         # mode 2
@@ -351,6 +357,11 @@ def mode_simple_callback(msg):
 def color_callback(msg):
     leds.set_face_color(int(msg.r), int(msg.g), int(msg.b), int(msg.a))
 
+def face_callback(msg):
+    if msg.data == 0:
+        leds.set_face(leds.happy_face)
+    elif msg.data == 1:
+        leds.set_face(leds.sad_face)
 
 def led_listener():
     rospy.init_node('roboy_led_control')
@@ -360,6 +371,7 @@ def led_listener():
     rospy.Subscriber("/roboy/control/matrix/leds/mode/simple", Int32, mode_simple_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/point", Int32, point_callback, queue_size=1)
     rospy.Subscriber("/roboy/control/matrix/leds/color", ColorRGBA, color_callback)
+    rospy.Subscriber("/roboy/control/matrix/leds/face", Int32, face_callback)
     leds.mode = 1
     leds.dimming_puls(8)
     rospy.spin()
