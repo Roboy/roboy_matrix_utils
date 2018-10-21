@@ -5,7 +5,7 @@ import time
 import numpy
 import random
 from roboy_communication_control.msg import ControlLeds
-from std_msgs.msg import Empty, Int32
+from std_msgs.msg import Empty, Int32, ColorRGBA
 
 
 class MatrixLeds(object):
@@ -17,6 +17,7 @@ class MatrixLeds(object):
         self.channels = 4  # red green white blue
         self.leds_num = 36
         self.mode = 0
+        self.current_color = [0, 0, 0, 50]
 
     def write_pixels(self, pixels):
         # image is a list of size 4*36
@@ -117,6 +118,49 @@ class MatrixLeds(object):
             color = [0] * 4
             color[pos] = half_brightness
             # pixels = pixels[-2:] + pixels[:-2]
+
+    def colored_pulsing_face(self, duration=0):
+        # mode 1
+        # dims in & out changing colors
+        brightness = 50
+        half_brightness = 0  # int(100 / 2)
+        # leds_num = 36
+        pixels = [0, 0, 0, half_brightness] * self.leds_num
+        count = 0
+        d = 1
+        pos = 0
+        color = [0, 0, 0, half_brightness]
+        start = time.time()
+        while self.run and self.mode == 3:
+            if duration != 0 and time.time() - start > duration:
+                break
+            # color = [0,0,0,half_brightness]
+            pixels = [0, 0, 0, 0]
+            for i in range(1, self.leds_num):
+                if i in [3, 4, 5, 13, 14, 15, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]:
+                    pixels += color
+                else:
+                    pixels += [0, 0, 0, 0]
+            self.write_pixels(pixels)
+            # self.show(pixels)
+            time.sleep(0.02)
+            if count != 1 and (count - 1) % brightness == 0:
+                d = -d
+            if (count - 1) % (2 * brightness) == 0:
+                #    print "CHANGED COLOR"
+                if pos == 3:
+                    pos = 0
+                else:
+                    pos += 1
+            half_brightness += d
+            count += abs(d)
+            color = self.current_color
+            for i in range(4):
+                if color[i] != 0:
+                    color[i] = half_brightness
+
+    def set_face_color(self, red, green, blue, white):
+        self.current_color = [red, green, blue, white]
 
     def point_towards(self, point_led, duration=8, color=3):
         # mode 2
@@ -296,6 +340,10 @@ def mode_simple_callback(msg):
         leds.pulsing_face(0)
 
 
+def color_callback(msg):
+    leds.set_face_color(msg.r, msg.g, msg.b, msg.a)
+
+
 def led_listener():
     rospy.init_node('roboy_led_control')
     rospy.Subscriber("/roboy/control/matrix/leds/mode", ControlLeds, mode_callback)
@@ -303,6 +351,7 @@ def led_listener():
     rospy.Subscriber("/roboy/control/matrix/leds/freeze", Empty, freeze_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/mode/simple", Int32, mode_simple_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/point", Int32, point_callback, queue_size=1)
+    rospy.Subscriber("/roboy/control/matrix/leds/color", ColorRGBA, color_callback)
     leds.mode = 1
     leds.dimming_puls(8)
     rospy.spin()
