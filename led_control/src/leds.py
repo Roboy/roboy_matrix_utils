@@ -202,13 +202,15 @@ class MatrixLeds(object):
                 if color[i] != 0:
                     color[i] = half_brightness
 
+            if 8 <= think_led <= 10:
+                clockwise = not clockwise
+
             if clockwise:
                 think_led += 1
             else:
                 think_led -= 1
 
-            if 8 <= think_led <= 10:
-                clockwise = not clockwise
+
 
     def point_face(self, duration=0, direction=0):
         brightness = 50
