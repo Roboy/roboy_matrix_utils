@@ -290,7 +290,7 @@ def mode_simple_callback(msg):
         leds.mode = 2
         print "tail"
         leds.tail_clock(0)
-    elif msg.mode == 3:
+    elif msg.data == 3:
         leds.mode = 3
         print "face"
         leds.pulsing_face(0)
@@ -302,7 +302,7 @@ def led_listener():
     rospy.Subscriber("/roboy/control/matrix/leds/off", Empty, off_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/freeze", Empty, freeze_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/mode/simple", Int32, mode_simple_callback)
-    rospy.Subscriber("/roboy/control/matrix/leds/point", Int32, point_callback)
+    rospy.Subscriber("/roboy/control/matrix/leds/point", Int32, point_callback, queue_size=1)
     leds.mode = 1
     leds.dimming_puls(8)
     rospy.spin()
