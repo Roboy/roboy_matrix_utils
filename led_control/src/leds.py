@@ -484,8 +484,8 @@ def mode_simple_callback(msg):
         leds.point_face(0)
     elif msg.data == 8:
         leds.mode = 8
-        print "left face"
-        leds.point_face(0)
+        print "right face"
+        leds.point_face(0, 1)
 
 
 def color_callback(msg):
