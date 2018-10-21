@@ -349,7 +349,7 @@ def mode_simple_callback(msg):
 
 
 def color_callback(msg):
-    leds.set_face_color(msg.r, msg.g, msg.b, msg.a)
+    leds.set_face_color(int(msg.r), int(msg.g), int(msg.b), int(msg.a))
 
 
 def led_listener():
