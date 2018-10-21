@@ -173,7 +173,7 @@ class MatrixLeds(object):
         start = time.time()
 
         think_led = 8 # 9 and 10
-        clockwise = True
+        clockwise = False
 
         while self.run and self.mode == 6:
             if duration != 0 and time.time() - start > duration:
@@ -210,6 +210,65 @@ class MatrixLeds(object):
             if 8 <= think_led <= 10:
                 clockwise = not clockwise
 
+    def point_face(self, duration=0, direction=0):
+        brightness = 50
+        half_brightness = 0
+
+        count = 0
+        d = 1
+        pos = 0
+        color = [0, 0, 0, half_brightness]
+        start = time.time()
+
+        point_r = [17, 18, 19]
+        point_l = [35, 0, 1]
+
+        if direction == 0:
+            point_led = 35  # 9 and 10
+        else:
+            point_led = 17
+        clockwise = False
+
+        while self.run and (self.mode == 7 or self.mode == 8):
+            if duration != 0 and time.time() - start > duration:
+                break
+            pixels = [0, 0, 0, 0]
+            for i in range(1, self.leds_num):
+                if i in self.face_pixels:
+                    pixels += color
+                else:
+                    pixels += [0, 0, 0, 0]
+
+            if point_led == 36:
+                point_led = 0
+
+            pixels[point_led * 4 + 3] = 50
+            self.write_pixels(pixels)
+            time.sleep(0.02)
+            if count != 1 and (count - 1) % brightness == 0:
+                d = -d
+            if (count - 1) % (2 * brightness) == 0:
+                if pos == 3:
+                    pos = 0
+                else:
+                    pos += 1
+            half_brightness += d
+            count += abs(d)
+            color = self.current_color
+            for i in range(4):
+                if color[i] != 0:
+                    color[i] = half_brightness
+
+            if point_led not in point_r and point_led not in point_l:
+                clockwise = not clockwise
+
+            if point_led == 0 and not clockwise:
+                point_led = 36
+
+            if clockwise:
+                point_led += 1
+            else:
+                point_led -= 1
 
     def set_face_color(self, red, green, blue, white):
         self.current_color = [red, green, blue, white]
@@ -358,6 +417,14 @@ def mode_callback(msg):
         leds.mode = 6
         print "thinking face"
         leds.thinking_face(msg.duration)
+    elif msg.mode == 7:
+        leds.mode = 7
+        print "left face"
+        leds.point_face(msg.duration)
+    elif msg.mode == 8:
+        leds.mode = 8
+        print "right face"
+        leds.point_face(msg.duration, 1)
 
 
 def point_callback(msg):
@@ -409,6 +476,14 @@ def mode_simple_callback(msg):
         leds.mode = 6
         print "thinking face"
         leds.thinking_face(0)
+    elif msg.data == 7:
+        leds.mode = 7
+        print "left face"
+        leds.point_face(0)
+    elif msg.data == 8:
+        leds.mode = 8
+        print "left face"
+        leds.point_face(0)
 
 
 def color_callback(msg):
