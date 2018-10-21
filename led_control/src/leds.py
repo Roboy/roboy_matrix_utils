@@ -131,7 +131,7 @@ class MatrixLeds(object):
         pos = 0
         color = [0, 0, 0, half_brightness]
         start = time.time()
-        while self.run and self.mode == 3:
+        while self.run and self.mode == 5:
             if duration != 0 and time.time() - start > duration:
                 break
             # color = [0,0,0,half_brightness]
@@ -295,6 +295,10 @@ def mode_callback(msg):
         leds.mode = 3
         print "face"
         leds.pulsing_face(msg.duration)
+    elif msg.mode == 5:
+        leds.mode = 5
+        print "face"
+        leds.pulsing_face(msg.duration)
 
 
 def point_callback(msg):
@@ -338,6 +342,10 @@ def mode_simple_callback(msg):
         leds.mode = 3
         print "face"
         leds.pulsing_face(0)
+    elif msg.data == 5:
+        leds.mode = 5
+        print "color dependent face"
+        leds.colored_pulsing_face(0)
 
 
 def color_callback(msg):
