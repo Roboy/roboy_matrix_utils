@@ -162,6 +162,55 @@ class MatrixLeds(object):
                 if color[i] != 0:
                     color[i] = half_brightness
 
+    def thinking_face(self, duration=0):
+        brightness = 50
+        half_brightness = 0
+
+        count = 0
+        d = 1
+        pos = 0
+        color = [0, 0, 0, half_brightness]
+        start = time.time()
+
+        think_led = 8 # 9 and 10
+        clockwise = True
+
+        while self.run and self.mode == 6:
+            if duration != 0 and time.time() - start > duration:
+                break
+            pixels = [0, 0, 0, 0]
+            for i in range(1, self.leds_num):
+                if i in self.face_pixels:
+                    pixels += color
+                else:
+                    pixels += [0, 0, 0, 0]
+
+            pixels[think_led * 4 + 3] = 50
+            self.write_pixels(pixels)
+            time.sleep(0.02)
+            if count != 1 and (count - 1) % brightness == 0:
+                d = -d
+            if (count -1 ) % (2 * brightness) == 0:
+                if pos == 3:
+                    pos = 0
+                else:
+                    pos += 1
+            half_brightness += d
+            count += abs(d)
+            color = self.current_color
+            for i in range(4):
+                if color[i] != 0:
+                    color[i] = half_brightness
+
+            if clockwise:
+                think_led += 1
+            else:
+                think_led -= 1
+
+            if 8 <= think_led <= 10:
+                clockwise = not clockwise
+
+
     def set_face_color(self, red, green, blue, white):
         self.current_color = [red, green, blue, white]
 
@@ -303,8 +352,12 @@ def mode_callback(msg):
         leds.pulsing_face(msg.duration)
     elif msg.mode == 5:
         leds.mode = 5
-        print "face"
-        leds.pulsing_face(msg.duration)
+        print "color dependent face"
+        leds.colored_pulsing_face(msg.duration)
+    elif msg.mode == 6:
+        leds.mode = 6
+        print "thinking face"
+        leds.thinking_face(msg.duration)
 
 
 def point_callback(msg):
@@ -352,16 +405,22 @@ def mode_simple_callback(msg):
         leds.mode = 5
         print "color dependent face"
         leds.colored_pulsing_face(0)
+    elif msg.data == 6:
+        leds.mode = 6
+        print "thinking face"
+        leds.thinking_face(0)
 
 
 def color_callback(msg):
     leds.set_face_color(int(msg.r), int(msg.g), int(msg.b), int(msg.a))
+
 
 def face_callback(msg):
     if msg.data == 0:
         leds.set_face(leds.happy_face)
     elif msg.data == 1:
         leds.set_face(leds.sad_face)
+
 
 def led_listener():
     rospy.init_node('roboy_led_control')
