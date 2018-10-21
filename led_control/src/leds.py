@@ -420,10 +420,18 @@ def mode_callback(msg):
         print "thinking face"
         leds.thinking_face(msg.duration)
     elif msg.mode == 7:
+        leds.run = False
+        leds.mode = 0
+        time.sleep(0.25)
+        leds.run = True
         leds.mode = 7
         print "left face"
         leds.point_face(msg.duration)
     elif msg.mode == 8:
+        leds.run = False
+        leds.mode = 0
+        time.sleep(0.25)
+        leds.run = True
         leds.mode = 8
         print "right face"
         leds.point_face(msg.duration, 1)
@@ -479,10 +487,18 @@ def mode_simple_callback(msg):
         print "thinking face"
         leds.thinking_face(0)
     elif msg.data == 7:
+        leds.run = False
+        leds.mode = 0
+        time.sleep(0.25)
+        leds.run = True
         leds.mode = 7
         print "left face"
         leds.point_face(0)
     elif msg.data == 8:
+        leds.run = False
+        leds.mode = 0
+        time.sleep(0.25)
+        leds.run = True
         leds.mode = 8
         print "right face"
         leds.point_face(0, 1)
