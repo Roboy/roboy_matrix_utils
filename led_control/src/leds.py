@@ -397,6 +397,19 @@ class MatrixLeds(object):
                 pixels += [0, 0, 0, 0]
         self.write_pixels(pixels)
 
+    def visualize_da_4(self, point1, point2, point3, point4):
+        pixels = []
+        for i in range(self.leds_num):
+            if i == point1:
+                pixels += [50, 0, 0, 0]
+            elif i == point2:
+                pixels += [0, 50, 0, 0]
+            elif i == point3:
+                pixels += [0, 0, 50, 0]
+            elif i == point4:
+                pixels += [0, 0, 0, 50]
+            else:
+                pixels += [0, 0, 0, 0]
 
     def set_color(self, red, green, blue, white):
         color_array = []
