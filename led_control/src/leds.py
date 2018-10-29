@@ -210,8 +210,6 @@ class MatrixLeds(object):
             else:
                 think_led -= 1
 
-
-
     def point_face(self, duration=0, direction=0):
         brightness = 50
         half_brightness = 0
@@ -382,6 +380,23 @@ class MatrixLeds(object):
                 led_l -= 1
 
             time.sleep(0.05)
+
+    def simple_point(self, point, color):
+        """
+        light up one led(point) in a given color and shutdown all others
+        :param point: the number of the led that will get lit as int
+        :param color: an array/list of 4 ints containing the color
+        :return:
+        """
+        # iterate over all pixels, unset all expect for led_num
+        pixels = []
+        for i in range(self.leds_num):
+            if i == point:
+                pixels += color
+            else:
+                pixels += [0, 0, 0, 0]
+        self.write_pixels(pixels)
+
 
     def set_color(self, red, green, blue, white):
         color_array = []
