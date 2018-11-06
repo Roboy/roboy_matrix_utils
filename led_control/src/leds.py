@@ -6,6 +6,7 @@ import numpy
 import random
 from roboy_communication_control.msg import ControlLeds
 from std_msgs.msg import Empty, Int32, ColorRGBA
+from roboy_communication_cognition.srv import SetPoint
 
 
 class MatrixLeds(object):
@@ -397,6 +398,69 @@ class MatrixLeds(object):
                 pixels += [0, 0, 0, 0]
         self.write_pixels(pixels)
 
+    def idle(self, duration):
+        """
+        idle state in which half of the leds are light up in every face, after one second
+        they switch to the other half
+        :param duration: the the leds stay on, if 0 the mode stays
+        """
+        idle_timeout = time.time()
+        idle_even = True
+
+        start = time.time()
+        while self.run and self.mode == 9:
+            if duration != 0 and time.time() - start > duration:
+                break
+            if time.time() - idle_timeout >= 1:
+                idle_even = not idle_even
+                idle_timeout = time.time()
+                pixels = []
+                for i in range(36):
+                    if idle_even:
+                        if i % 2 == 0:
+                            pixels += [0, 0, 20, 0]
+                        else:
+                            pixels += [0, 0, 0, 0]
+                    else:
+                        if i % 2 == 0:
+                            pixels += [0, 0, 0, 0]
+                        else:
+                            pixels += [0, 0, 20, 0]
+                self.write_pixels(pixels)
+
+    def extended_point(self, point):
+        pixels = [0, 0, 0, 0] * 36
+        sup_leds = [point + 1, point - 1, point + 2, point - 2]
+        for i in range(len(sup_leds)):
+            if sup_leds[i] < 0:
+                sup_leds[i] += 36
+            if sup_leds[i] >= 36:
+                sup_leds[i] -= 36
+
+        pixels[4 * point] = 0
+        pixels[4 * point + 1] = 200
+        pixels[4 * point + 2] = 200
+        pixels[4 * point + 3] = 50
+
+        sup_cnt = 0
+        for s_l in sup_leds:
+            try:
+                if sup_cnt < 2:
+                    pixels[4 * s_l] = 0
+                    pixels[4 * s_l + 1] = 150
+                    pixels[4 * s_l + 2] = 150
+                    pixels[4 * s_l + 3] = 30
+                    sup_cnt += 1
+                else:
+                    pixels[4 * s_l] = 0
+                    pixels[4 * s_l + 1] = 100
+                    pixels[4 * s_l + 2] = 100
+                    pixels[4 * s_l + 3] = 10
+                    sup_cnt += 1
+            except IndexError:
+                rospy.logerr("caught an IndexError.point : " + str(point) + " s_l : " + str(s_l))
+        self.write_pixels(pixels)
+
     def visualize_da_4(self, point1, point2, point3, point4):
         pixels = []
         for i in range(self.leds_num):
@@ -463,6 +527,10 @@ def mode_callback(msg):
         leds.mode = 8
         print "right face"
         leds.point_face(msg.duration, 1)
+    elif msg.mode == 9:
+        leds.mode = 9
+        print "idle"
+        leds.idle(msg.duration)
 
 
 def point_callback(msg):
@@ -530,6 +598,10 @@ def mode_simple_callback(msg):
         leds.mode = 8
         print "right face"
         leds.point_face(0, 1)
+    elif msg.data == 9:
+        leds.mode = 9
+        print "idle"
+        leds.idle(0)
 
 
 def color_callback(msg):
@@ -543,6 +615,11 @@ def face_callback(msg):
         leds.set_face(leds.sad_face)
 
 
+def service_point_callback(req):
+    leds.run = False
+    leds.extended_point(req.point)
+
+
 def led_listener():
     rospy.init_node('roboy_led_control')
     rospy.Subscriber("/roboy/control/matrix/leds/mode", ControlLeds, mode_callback)
@@ -552,6 +629,7 @@ def led_listener():
     rospy.Subscriber("/roboy/control/matrix/leds/point", Int32, point_callback, queue_size=1)
     rospy.Subscriber("/roboy/control/matrix/leds/color", ColorRGBA, color_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/face", Int32, face_callback)
+    rospy.Service("/roboy/control/matrix/leds/point", SetPoint, service_point_callback)
     leds.mode = 1
     leds.dimming_puls(8)
     rospy.spin()
