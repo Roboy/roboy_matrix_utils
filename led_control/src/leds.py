@@ -617,8 +617,11 @@ def face_callback(msg):
 
 def service_point_callback(req):
     leds.run = False
-    leds.extended_point(req.point)
-    return None
+    try:
+        leds.extended_point(req.point)
+        return True
+    except Exception:
+        return False
 
 
 def led_listener():
