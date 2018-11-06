@@ -633,7 +633,7 @@ def led_listener():
     rospy.Subscriber("/roboy/control/matrix/leds/point", Int32, point_callback, queue_size=1)
     rospy.Subscriber("/roboy/control/matrix/leds/color", ColorRGBA, color_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/face", Int32, face_callback)
-    rospy.Service("/roboy/control/matrix/leds/point", SetPoint, service_point_callback)
+    rospy.Service("/roboy/control/matrix/leds/point/service", SetPoint, service_point_callback)
     leds.mode = 1
     leds.dimming_puls(8)
     rospy.spin()
