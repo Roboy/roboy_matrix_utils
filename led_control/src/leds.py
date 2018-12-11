@@ -4,7 +4,7 @@ import rospy
 import time
 import numpy
 import random
-from roboy_communication_control.msg import ControlLeds
+from roboy_control_msgs.msg import ControlLeds
 from std_msgs.msg import Empty, Int32
 
 class MatrixLeds(object):

@@ -3,7 +3,7 @@
 import rospy
 import pyaudio
 import wave
-from roboy_communication_cognition.srv import Talk
+from roboy_cognition_msgs.srv import Talk
 
 def play(req):
     filename = req.text

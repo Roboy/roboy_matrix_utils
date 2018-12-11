@@ -5,8 +5,8 @@ project(sensors_io)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roboy_communication_control
-  roboy_communication_middleware
+  roboy_control_msgs
+  roboy_middleware_msgs
   rospy
   std_msgs
   led_control
@@ -104,7 +104,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES sensors_io
-#  CATKIN_DEPENDS roboy_communication_control roboy_communication_middleware rospy std_msgs
+#  CATKIN_DEPENDS roboy_control_msgs roboy_middleware_msgs rospy std_msgs
 #  DEPENDS system_lib
 )
 

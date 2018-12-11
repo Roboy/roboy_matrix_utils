@@ -8,13 +8,13 @@ project(led_control)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roboy_communication_control
+  roboy_control_msgs
   rospy
   std_msgs
 )
 
 catkin_package(
-	  CATKIN_DEPENDS  rospy std_msgs roboy_communication_control
+	  CATKIN_DEPENDS  rospy std_msgs roboy_control_msgs
 	  )
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -108,7 +108,7 @@ catkin_package(
 #catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES led_control
-#  CATKIN_DEPENDS roboy_communication_control rospy std_msgs
+#  CATKIN_DEPENDS roboy_control_msgs rospy std_msgs
 #  DEPENDS system_lib
 #)
 
