@@ -3,35 +3,47 @@
 import rospy
 import pyaudio
 import wave
-from roboy_cognition_msgs.srv import Talk
+from roboy_cognition_msgs.srv import PlaySound
+from roboy_control_msgs.msg import Emotion
 
 def play(req):
-    filename = req.text
-    #define stream chunk
-    chunk = 1024
+    elapsed_time = 0
+    timestamps = list(req.timestamps)
+    emotions = list(req.emotions)
 
-    #open a wav format music
-    f = wave.open(filename,"rb")
-    #instantiate PyAudio
+    if len(timestamps) != len(emotions):
+        rospy.logerr("Mismatch of emotions and timestamp array sizes")
+        return False
+
+    pub = rospy.Publisher('/roboy/cognition/face/emotion', Emotion, queue_size=1)
+
+    chunk = 1024
+    sample_rate = 22050
+    seconds_per_buffer = float(chunk) / sample_rate
+
+    f = wave.open(req.filepath,"rb")
     p = pyaudio.PyAudio()
-    #open stream
-    stream = p.open(format = p.get_format_from_width(f.getsampwidth()),  \
-                    channels = f.getnchannels(),  \
-                    rate = f.getframerate(),  \
+
+    stream = p.open(format = p.get_format_from_width(f.getsampwidth()), \
+                    channels = f.getnchannels(), \
+                    rate = f.getframerate(), \
                     output = True)
-    #read data
+
     data = f.readframes(chunk)
 
-    #play stream  
     while data:
+        for s, e in zip(timestamps, emotions):
+            if abs(s-elapsed_time) <= seconds_per_buffer:
+                pub.publish(emotion=e)
+                timestamps.remove(s)
+                emotions.remove(e)
         stream.write(data)
         data = f.readframes(chunk)
+        elapsed_time +=seconds_per_buffer
 
-    #stop stream
     stream.stop_stream()
     stream.close()
 
-    #close PyAudio
     p.terminate()
 
     return True
@@ -39,7 +51,7 @@ def play(req):
 
 def replay_server():
     rospy.init_node('sound_play_server')
-    s = rospy.Service('/roboy/matrix/sound/play', Talk, play)
+    rospy.Service('/roboy/matrix/sound/play', PlaySound, play)
     print "Ready to play sounds"
     rospy.spin()
 
