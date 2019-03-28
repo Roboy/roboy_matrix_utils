@@ -1,8 +1,9 @@
+#!/usr/bin/env python
 import rospy
 import sys
 from roboy_cognition_msgs.srv import PlaySound, PlaySoundRequest
 
-basepath = "/home/missxa/Documents/HPF/"
+basepath = rospy.get_param("base_path")
 lookup = {"div_1": PlaySoundRequest(filepath=basepath+"Division/1.wav", emotions=["img:money"], timestamps=[5.0]),
           "div_2": PlaySoundRequest(filepath=basepath+"Division/2.wav", emotions=[], timestamps=[]),
           "div_3": PlaySoundRequest(filepath=basepath+"Division/3.wav", emotions=[], timestamps=[]),
