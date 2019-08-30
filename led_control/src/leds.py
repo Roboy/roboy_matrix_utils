@@ -88,9 +88,9 @@ class MatrixLeds(object):
     def turn_off(self):
         self.write_pixels([0]*self.channels*self.leds_num)
 
-    def color_wave(wait):
-        brightness = 25
-        tick = 0
+    def color_wave(self, wait):
+        brightness = 1
+        tick = 1
         stripsize = self.leds_num
         cycle = stripsize*25
 
@@ -98,21 +98,21 @@ class MatrixLeds(object):
 
         while (tick % cycle):
             tick += 1
-            offset = map2PI(tick)
-
+            offset = self.map2PI(tick)
+            pixel_colors = []
             for i in range(0, stripsize):
-                ang = map2PI(i) - offset
+                ang = self.map2PI(i) - offset
                 rsin = math.sin(ang)
-                gsin = math.sin(2.0 * ang / 3.0 + map2PI(int(stripsize/6)))
-                bsin = sin(4.0 * ang / 5.0 + map2PI(int(stripsize/3)))
-                pixel_colors += [trig_scale(rsin), trig_scale(gsin), trig_scale(bsin), brightness]
+                gsin = math.sin(2.0 * ang / 3.0 + self.map2PI(int(stripsize/6)))
+                bsin = math.sin(4.0 * ang / 5.0 + self.map2PI(int(stripsize/3)))
+                pixel_colors += [self.trig_scale(rsin), self.trig_scale(gsin), self.trig_scale(bsin), brightness]
             self.write_pixels(pixel_colors)
             time.sleep(wait)
 
-    def map2PI(i):
+    def map2PI(self, i):
         return math.pi*2.0*float(i) / float(self.leds_num)
 
-    def trig_scale(val):
+    def trig_scale(self, val):
         val += 1.0
         val *= 127.0
         return int(val) & 255
@@ -176,7 +176,9 @@ def led_listener():
     rospy.Subscriber("/roboy/control/matrix/leds/mode/simple", Int32, mode_simple_callback)
     # leds.mode=1
     # leds.dimming_puls(8)
-    leds.color_wave(1)
+    leds.turn_off()
+    time.sleep(2)
+    leds.color_wave(0.01)
     import pdb; pdb.set_trace()
     rospy.spin()
 
