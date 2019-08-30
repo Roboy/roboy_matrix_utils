@@ -88,15 +88,16 @@ class MatrixLeds(object):
     def turn_off(self):
         self.write_pixels([0]*self.channels*self.leds_num)
 
-    def color_wave(self, wait):
+    def color_wave(self, wait=0.04):
         brightness = 0
         tick = 1
         stripsize = self.leds_num/2
-        cycle = stripsize*25
+        # cycle = stripsize*25
 
         pixel_colors = []
 
-        while (tick % cycle):
+        # while (tick % cycle):
+        while self.run and self.mode == 4:
             tick += 1
             offset = self.map2PI(tick*2)
             pixel_colors = []
@@ -168,6 +169,10 @@ def mode_simple_callback(msg):
             print "blue"
             leds.set_color(0,0,255,5)
             time.sleep(0.5)
+    elif (msg.data == 4):
+        leds.mode = 4
+        print "rainbow"
+        leds.color_wave()
 
 def led_listener():
     rospy.init_node('roboy_led_control')
@@ -175,13 +180,13 @@ def led_listener():
     rospy.Subscriber("/roboy/control/matrix/leds/off", Empty, off_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/freeze", Empty, freeze_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/mode/simple", Int32, mode_simple_callback)
-    # leds.mode=1
-    # leds.dimming_puls(8)
-    leds.turn_off()
-    time.sleep(1)
-    leds.color_wave(0.04)
+    leds.mode=1
+    leds.dimming_puls(4)
+    # leds.turn_off()
+    # time.sleep(1)
+    # leds.color_wave()
     #import pdb; pdb.set_trace()
-    #rospy.spin()
+    rospy.spin()
 
 
 
