@@ -103,8 +103,8 @@ class MatrixLeds(object):
             for i in range(0, stripsize):
                 ang = self.map2PI(i) - offset
                 rsin = math.sin(ang)
-                gsin = math.sin(2.0 * ang / 3.0 + self.map2PI(int(stripsize/6)))
-                bsin = math.sin(4.0 * ang / 5.0 + self.map2PI(int(stripsize/3)))
+                gsin = math.sin(2.0 * ang / 3.0 + self.map2PI(int(stripsize/4)))
+                bsin = math.sin(4.0 * ang / 5.0 + self.map2PI(int(stripsize/2)))
                 pixel_colors += [self.trig_scale(rsin), self.trig_scale(gsin), self.trig_scale(bsin), brightness]
             self.write_pixels(pixel_colors)
             time.sleep(wait)
