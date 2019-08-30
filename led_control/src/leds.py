@@ -13,7 +13,7 @@ class MatrixLeds(object):
         super(MatrixLeds, self).__init__()
         self.run = True
         self.channels = 4 # red green white blue
-        self.leds_num = 36
+        self.leds_num = 30
         self.mode=0
 
     def write_pixels(self,pixels):
@@ -80,7 +80,7 @@ class MatrixLeds(object):
 
     def set_color(self, red, green, blue, white):
         color_array = []
-        for x in range(0,35):
+        for x in range(0,30):
             color_array += [red, green, blue, white]
         self.write_pixels(color_array)
 
@@ -127,7 +127,17 @@ def mode_simple_callback(msg):
         leds.mode=2
         print "tail"
         leds.tail_clock(0)
-    
+    elif (msg.data==3):
+        leds.mode = 3
+        for i in range(5):
+            print "red"
+            leds.set_color(255,0,0,5)
+
+            time.sleep(0.5)
+            print "blue"
+            leds.set_color(0,0,255,5)
+            time.sleep(0.5)
+
 def led_listener():
     rospy.init_node('roboy_led_control')
     rospy.Subscriber("/roboy/control/matrix/leds/mode", ControlLeds, mode_callback)
