@@ -6,6 +6,7 @@ import numpy
 import random
 from roboy_control_msgs.msg import ControlLeds
 from std_msgs.msg import Empty, Int32
+import math
 
 class MatrixLeds(object):
     """docstring for MatrixLeds"""
@@ -22,7 +23,7 @@ class MatrixLeds(object):
             bin_file.write(bytearray(pixels))
         bin_file.close()
 
-        
+
     def dimming_puls(self, duration=0):
         # mode 1
         # dims in & out changing colors
@@ -87,6 +88,35 @@ class MatrixLeds(object):
     def turn_off(self):
         self.write_pixels([0]*self.channels*self.leds_num)
 
+    def color_wave(wait):
+        brightness = 25
+        tick = 0
+        stripsize = self.leds_num
+        cycle = stripsize*25
+
+        pixel_colors = []
+
+        while (tick % cycle):
+            tick += 1
+            offset = map2PI(tick)
+
+            for i in range(0, stripsize):
+                ang = map2PI(i) - offset
+                rsin = math.sin(ang)
+                gsin = math.sin(2.0 * ang / 3.0 + map2PI(int(stripsize/6)))
+                bsin = sin(4.0 * ang / 5.0 + map2PI(int(stripsize/3)))
+                pixel_colors += [trig_scale(rsin), trig_scale(gsin), trig_scale(bsin), brightness]
+            self.write_pixels(pixel_colors)
+            time.sleep(wait)
+
+    def map2PI(i):
+        return math.pi*2.0*float(i) / float(self.leds_num)
+
+    def trig_scale(val):
+        val += 1.0
+        val *= 127.0
+        return int(val) & 255
+
 def mode_callback(msg):
     leds.run = True
     if (msg.mode==0):
@@ -112,7 +142,7 @@ def freeze_callback(msg):
     leds.run = False
     leds.mode=-1
     leds.set_color(0,0,0,15)
-    
+
 def mode_simple_callback(msg):
     leds.run = True
     if (msg.data==0):
@@ -144,15 +174,15 @@ def led_listener():
     rospy.Subscriber("/roboy/control/matrix/leds/off", Empty, off_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/freeze", Empty, freeze_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/mode/simple", Int32, mode_simple_callback)
-    leds.mode=1
-    leds.dimming_puls(8)
+    # leds.mode=1
+    # leds.dimming_puls(8)
+    leds.color_wave(1)
+    import pdb; pdb.set_trace()
     rospy.spin()
 
-        
+
 
 if __name__ == '__main__':
     global leds
     leds = MatrixLeds()
     led_listener()
-    
-
