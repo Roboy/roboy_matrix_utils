@@ -121,10 +121,12 @@ class MatrixLeds(object):
         return int(val) & 255
 
 def mode_callback(msg):
+    print(msg.data)
     leds.run = True
     if (msg.mode==0):
         print "off"
         leds.mode=0
+        leds.run = False
         leds.turn_off()
     elif (msg.mode==1):
         leds.mode=1
