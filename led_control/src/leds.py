@@ -87,6 +87,7 @@ class MatrixLeds(object):
 
     def turn_off(self):
         self.write_pixels([0]*self.channels*self.leds_num)
+        self.mode = 0
 
     def color_wave(self, wait=0.04):
         brightness = 0
