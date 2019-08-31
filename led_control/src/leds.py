@@ -27,7 +27,16 @@ class MatrixLeds(object):
     def dimming_puls(self, duration=0):
         # mode 1
         # dims in & out changing colors
-        while True:
+        brightness = 20
+        half_brightness = 0#int(100 / 2)
+        # leds_num = 36
+        pixels  = [0, 0, 0, half_brightness] * self.leds_num
+        count = 0
+        d = 1
+        pos = 0
+        color = [0,0,0,half_brightness]
+        start = time.time()
+        while self.run and self.mode==1:
             if (duration!=0 and time.time()-start>duration):
                 break
             #color = [0,0,0,half_brightness]
@@ -47,8 +56,8 @@ class MatrixLeds(object):
             count += abs(d)
             color = [0]*4
             color[pos] = half_brightness
-            pixels = pixels[-2:] + pixels[:-2]
-
+            # pixels = pixels[-2:] + pixels[:-2]
+            
     def tail_clock(self, duration=0):
         # mode 2
         brightness = 1
