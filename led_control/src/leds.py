@@ -27,46 +27,27 @@ class MatrixLeds(object):
     def dimming_puls(self, duration=0):
         # mode 1
         # dims in & out changing colors
-        brightness = 20
-        half_brightness = 0#int(100 / 2)
-        # leds_num = 36
-        pixels  = [0, 0, 0, half_brightness] * self.leds_num
-        count = 0
-        d = 1
-        pos = 0
-        color = [0,0,0,half_brightness]
-        start = time.time()
-        while self.run and self.mode==1:
 
-            for i in range(255):
-                ang = self.map2PI(i) - offset
-                rsin = math.sin(ang)
-                gsin = math.sin(2.0 * ang / 3.0 + self.map2PI(int(stripsize/6)))
-                bsin = math.sin(4.0 * ang / 5.0 + self.map2PI(int(stripsize/3)))
-                pixel_color = [self.trig_scale(rsin), self.trig_scale(gsin), self.trig_scale(bsin), brightness]
-                pixel_colors = pixel_color * self.leds_num
-            self.write_pixels(pixel_colors)
-
-            # if (duration!=0 and time.time()-start>duration):
-            #     break
-            # #color = [0,0,0,half_brightness]
-            # pixels  = color * self.leds_num
-            # self.write_pixels(pixels)
-            # # self.show(pixels)
-            # time.sleep(0.02)
-            # if (count!=1 and (count-1)%brightness==0):
-            #     d = -d
-            # if((count-1)%(2*brightness)==0):
-            # #    print "CHANGED COLOR"
-            #     if (pos==3):
-            #         pos=0
-            #     else:
-            #         pos += 1
-            # half_brightness += d
-            # count += abs(d)
-            # color = [0]*4
-            # color[pos] = half_brightness
-            # pixels = pixels[-2:] + pixels[:-2]
+        if (duration!=0 and time.time()-start>duration):
+            break
+        #color = [0,0,0,half_brightness]
+        pixels  = color * self.leds_num
+        self.write_pixels(pixels)
+        # self.show(pixels)
+        time.sleep(0.02)
+        if (count!=1 and (count-1)%brightness==0):
+            d = -d
+        if((count-1)%(2*brightness)==0):
+        #    print "CHANGED COLOR"
+            if (pos==3):
+                pos=0
+            else:
+                pos += 1
+        half_brightness += d
+        count += abs(d)
+        color = [0]*4
+        color[pos] = half_brightness
+        pixels = pixels[-2:] + pixels[:-2]
 
     def tail_clock(self, duration=0):
         # mode 2
