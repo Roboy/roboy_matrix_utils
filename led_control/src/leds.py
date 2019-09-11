@@ -22,7 +22,8 @@ class MatrixLeds(object):
 
         len = pixels/self.channels
         everloop = []
-        for i in range(len):
+        i = 0
+        while i < len:
             everloop.append(tuple(pixels[i:i+4])
             i += 4
         led.set(everloop)
