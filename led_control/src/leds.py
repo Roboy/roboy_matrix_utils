@@ -1,5 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
+from matrix_lite import led
 import rospy
 import time
 import numpy
@@ -18,10 +19,17 @@ class MatrixLeds(object):
         self.mode=0
 
     def write_pixels(self,pixels):
-        # image is a list of size 4*36
-        with open('/dev/matrixio_everloop','wb') as bin_file:
-            bin_file.write(bytearray(pixels))
-        bin_file.close()
+
+        len = pixels/self.channels
+        everloop = []
+        for i in range(len):
+            everloop.append(tuple(pixels[i:i+4])
+            i += 4
+        led.set(everloop)
+        # # image is a list of size 4*36
+        # with open('/dev/matrixio_everloop','wb') as bin_file:
+        #     bin_file.write(bytearray(pixels))
+        # bin_file.close()
 
 
     def dimming_puls(self, duration=0):
@@ -57,7 +65,7 @@ class MatrixLeds(object):
             color = [0]*4
             color[pos] = half_brightness
             # pixels = pixels[-2:] + pixels[:-2]
-            
+
     def tail_clock(self, duration=0):
         # mode 2
         brightness = 1
