@@ -19,12 +19,10 @@ class MatrixLeds(object):
         self.mode=0
 
     def write_pixels(self,pixels):
-
-        len = pixels/self.channels
         everloop = []
         i = 0
-        while i < len:
-            everloop.append(tuple(pixels[i:i+4])
+        while i < len(pixels):
+            everloop.append(tuple(pixels[i:i+4]))
             i += 4
         led.set(everloop)
         # # image is a list of size 4*36
