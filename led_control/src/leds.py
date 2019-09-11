@@ -55,7 +55,7 @@ class MatrixLeds(object):
             if (count!=1 and (count-1)%brightness==0):
                 d = -d
             if((count-1)%(2*brightness)==0):
-            #    print "CHANGED COLOR"
+            #    print("CHANGED COLOR"
                 if (pos==3):
                     pos=0
                 else:
@@ -71,7 +71,7 @@ class MatrixLeds(object):
         brightness = 1
         tail = 15
         led = 0
-        #print "duration: ",duration
+        #print("duration: ",duration
         start = time.time()
         while self.run and self.mode==2:
             if (duration!=0 and time.time()-start > duration):
@@ -132,26 +132,26 @@ def mode_callback(msg):
     print(msg.data)
     leds.run = True
     if (msg.mode==0):
-        print "off"
+        print("off")
         leds.mode=0
         leds.run = False
         leds.turn_off()
     elif (msg.mode==1):
         leds.mode=1
-        print "puls"
+        print("puls")
         leds.dimming_puls(msg.duration)
     elif (msg.mode==2):
         leds.mode=2
-        print "tail"
+        print("tail")
         leds.tail_clock(msg.duration)
 
 def off_callback(msg):
-    print "off"
+    print("off")
     leds.run = False
     leds.turn_off()
 
 def freeze_callback(msg):
-    print "freeze"
+    print("freeze")
     leds.run = False
     leds.mode=-1
     leds.set_color(0,0,0,15)
@@ -159,30 +159,30 @@ def freeze_callback(msg):
 def mode_simple_callback(msg):
     leds.run = True
     if (msg.data==0):
-        print "off"
+        print("off")
         leds.mode=0
         leds.turn_off()
     elif (msg.data==1):
         leds.mode=1
-        print "puls"
+        print("puls")
         leds.dimming_puls(0)
     elif (msg.data==2):
         leds.mode=2
-        print "tail"
+        print("tail")
         leds.tail_clock(0)
     elif (msg.data==3):
         leds.mode = 3
         for i in range(5):
-            print "red"
+            print("red")
             leds.set_color(255,0,0,5)
 
             time.sleep(0.5)
-            print "blue"
+            print("blue")
             leds.set_color(0,0,255,5)
             time.sleep(0.5)
     elif (msg.data == 4):
         leds.mode = 4
-        print "rainbow"
+        print("rainbow")
         leds.color_wave()
 
 def led_listener():
