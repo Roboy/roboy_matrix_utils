@@ -6,7 +6,7 @@ import time
 import numpy
 import random
 from roboy_control_msgs.msg import ControlLeds
-from std_msgs.msg import Empty, Int32
+from std_msgs.msg import Empty, Int32, String
 import math
 
 class MatrixLeds(object):
@@ -88,7 +88,7 @@ class MatrixLeds(object):
 
     def set_color(self, red, green, blue, white):
         color_array = []
-        for x in range(0,30):
+        for x in range(0,self.leds_num):
             color_array += [red, green, blue, white]
         self.write_pixels(color_array)
 
@@ -183,6 +183,12 @@ def mode_simple_callback(msg):
         leds.mode = 4
         print("rainbow")
         leds.color_wave()
+def color_callback(msg):
+    leds.run = False
+    if msg.data == "white":
+        leds.set_color(255,255,255,0)
+    elif msg.data == "pink":
+        leds.set_color(255,192,203):       
 
 def led_listener():
     rospy.init_node('roboy_led_control')
@@ -190,6 +196,7 @@ def led_listener():
     rospy.Subscriber("/roboy/control/matrix/leds/off", Empty, off_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/freeze", Empty, freeze_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/mode/simple", Int32, mode_simple_callback)
+    rospy.Subscriber({"/roboy/control/matrix/leds/color", String, color_callback)
     leds.mode=1
     leds.dimming_puls(4)
     # leds.turn_off()
