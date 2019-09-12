@@ -185,10 +185,11 @@ def mode_simple_callback(msg):
         leds.color_wave()
 def color_callback(msg):
     leds.run = False
+    leds.mode = -1
     if msg.data == "white":
         leds.set_color(255,255,255,0)
-    elif msg.data == "pink":
-        leds.set_color(255,192,203):       
+    elif msg.data == "black":
+        leds.set_color(0,0,0,0)       
 
 def led_listener():
     rospy.init_node('roboy_led_control')
@@ -196,7 +197,7 @@ def led_listener():
     rospy.Subscriber("/roboy/control/matrix/leds/off", Empty, off_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/freeze", Empty, freeze_callback)
     rospy.Subscriber("/roboy/control/matrix/leds/mode/simple", Int32, mode_simple_callback)
-    rospy.Subscriber({"/roboy/control/matrix/leds/color", String, color_callback)
+    rospy.Subscriber("/roboy/control/matrix/leds/color", String, color_callback)
     leds.mode=1
     leds.dimming_puls(4)
     # leds.turn_off()
