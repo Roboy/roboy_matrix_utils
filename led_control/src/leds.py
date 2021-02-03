@@ -7,6 +7,14 @@ import random
 from roboy_control_msgs.msg import ControlLeds
 from std_msgs.msg import Empty, Int32
 import math
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--robot', action="store", default="brain", dest="robot")
+args = parser.parse_args()
+topic_root = "/roboy/"+args.robot
+        
+
 
 class MatrixLeds(object):
     """docstring for MatrixLeds"""
@@ -149,19 +157,23 @@ def freeze_callback(msg):
     leds.set_color(0,0,0,15)
 
 def mode_simple_callback(msg):
-    leds.run = True
+    print("got message" + str(msg))
+    
     if (msg.data==0):
         print "off"
+        leds.run = False
         leds.mode=0
         leds.turn_off()
     elif (msg.data==1):
         leds.mode=1
         print "puls"
-        leds.dimming_puls(0)
+        # leds.dimming_puls(0)
+        leds.run = True
     elif (msg.data==2):
         leds.mode=2
         print "tail"
-        leds.tail_clock(0)
+        # leds.tail_clock(0)
+        leds.run = True
     elif (msg.data==3):
         leds.mode = 3
         for i in range(5):
@@ -172,24 +184,40 @@ def mode_simple_callback(msg):
             print "blue"
             leds.set_color(0,0,255,5)
             time.sleep(0.5)
+        leds.run = True
     elif (msg.data == 4):
         leds.mode = 4
         print "rainbow"
-        leds.color_wave()
+        # leds.color_wave()
+        leds.run = True
+
 
 def led_listener():
-    rospy.init_node('roboy_led_control')
-    rospy.Subscriber("/roboy/control/matrix/leds/mode", ControlLeds, mode_callback)
-    rospy.Subscriber("/roboy/control/matrix/leds/off", Empty, off_callback)
-    rospy.Subscriber("/roboy/control/matrix/leds/freeze", Empty, freeze_callback)
-    rospy.Subscriber("/roboy/control/matrix/leds/mode/simple", Int32, mode_simple_callback)
+    rospy.init_node(args.robot+'_matrix_led_control')
+    rospy.Subscriber(topic_root+"/control/matrix/leds/mode", ControlLeds, mode_callback)
+    rospy.Subscriber(topic_root+"/control/matrix/leds/off", Empty, off_callback)
+    rospy.Subscriber(topic_root+"/control/matrix/leds/freeze", Empty, freeze_callback)
+    rospy.Subscriber(topic_root+"/control/matrix/leds/mode/simple", Int32, mode_simple_callback)
+    rospy.loginfo("Subscribed to " + topic_root + "/control/matrix/leds/mode/simple")
     leds.mode=1
     leds.dimming_puls(4)
-    # leds.turn_off()
-    # time.sleep(1)
-    # leds.color_wave()
-    #import pdb; pdb.set_trace()
-    rospy.spin()
+
+    rate = rospy.Rate(50)
+    while not rospy.is_shutdown():
+        if leds.mode == 0:
+        	leds.run = False
+        	leds.turn_off()
+        elif leds.mode == 1:
+        	leds.run = True
+        	leds.dimming_puls(0)
+        elif leds.mode == 2:
+        	leds.run = True
+        	leds.tail_clock(0)
+        elif leds.mode == 4:
+        	leds.run = True
+        	leds.color_wave()
+        rate.sleep()
+
 
 
 
