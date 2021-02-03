@@ -89,7 +89,7 @@ class MatrixLeds(object):
 
     def set_color(self, red, green, blue, white):
         color_array = []
-        for x in range(0,30):
+        for x in range(0,35):
             color_array += [red, green, blue, white]
         self.write_pixels(color_array)
 
@@ -199,10 +199,12 @@ def led_listener():
     rospy.Subscriber(topic_root+"/control/matrix/leds/freeze", Empty, freeze_callback)
     rospy.Subscriber(topic_root+"/control/matrix/leds/mode/simple", Int32, mode_simple_callback)
     rospy.loginfo("Subscribed to " + topic_root + "/control/matrix/leds/mode/simple")
-    leds.mode=1
-    leds.dimming_puls(4)
-
-    rate = rospy.Rate(50)
+    #leds.mode=1
+    #leds.dimming_puls(4)
+    leds.mode = 3
+    leds.set_color(0,0,30,1)
+ 
+    rate = rospy.Rate(100)
     while not rospy.is_shutdown():
         if leds.mode == 0:
         	leds.run = False
@@ -217,8 +219,8 @@ def led_listener():
         	leds.run = True
         	leds.color_wave()
         rate.sleep()
-
-
+    leds.run = False
+    leds.turn_off()
 
 
 if __name__ == '__main__':
